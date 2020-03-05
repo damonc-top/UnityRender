@@ -7,13 +7,17 @@
 		[NoScaleOffset] _NormalMap("Normals", 2D) = "bump" {}
 		_BumpScale("Bump Scale", Float) = 1
 
-		[NoScaleOffset]_MetallicMap("MetallicMap", 2D) = "white"{}
+		[NoScaleOffset]_MetallicMap("Metallic", 2D) = "white"{}
 		[Gamma] _Metallic("Metallic", Range(0, 1)) = 0
 		_Smoothness("Smoothness", Range(0, 1)) = 0.1
 
 		_DetailTex("Detail Texture", 2D) = "gray" {}
+
 		[NoScaleOffset] _DetailNormalMap("Detail Normals", 2D) = "bump" {}
 		_DetailBumpScale("Detail Bump Scale", Float) = 1
+
+		[NoScaleOffset]_EmissionMap("Emission", 2D) = "white"{}
+		_Emission("Emission", color) = (0,0,0)
 	}
 
 	CGINCLUDE
@@ -38,6 +42,7 @@
 			//#pragma multi_compile _ _MATALLIC_MAP
 			#pragma shader_feature _METALLIC_MAP
 			#pragma shader_feature _ _SMOOTHNESS_ALBEDO _SMOOTHNESS_METALLIC
+			#pragma shader_feature _ _EMISSION_MAP
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram

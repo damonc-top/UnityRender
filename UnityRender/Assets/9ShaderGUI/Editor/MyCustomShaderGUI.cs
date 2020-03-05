@@ -8,8 +8,8 @@ namespace  GUIExtension
     enum Switchkeyword
     {
         UNIFORM,
-        METALLIC,
-        SMOOTHNESS
+        ALBEDO,
+        METALLIC
     }
     public class MyCustomShaderGUI : UnityEditor.ShaderGUI 
     {
@@ -20,6 +20,7 @@ namespace  GUIExtension
         private string keyword_metallic = "_METALLIC_MAP";
         private string keyword_smoothness_albedo = "_SMOOTHNESS_ALBEDO";
         private string keyword_smoothness_metallic = "_SMOOTHNESS_METALLIC";
+        private ColorPickerHDRConfig config = new ColorPickerHDRConfig(0, 99, 1 / 99f, 3f);
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
@@ -55,7 +56,7 @@ namespace  GUIExtension
             MaterialProperty property = FindProperty(propertyName, MaterialProperties, true);
             MaterialEditor.ShaderProperty(property, MakeLabelGUIContent(property, tooltip));
         }
-        MaterialProperty MakerMapWithScaleShow(string mapName, string scaleValue, bool inversShow = false)
+        MaterialProperty MakerMapWithScaleShow(string mapName, string scaleValue, bool inversShow = false, string toolTip = null)
         {
             MaterialProperty mapinfo = FindProperty(mapName, MaterialProperties, true);
             //没有纹理时不想显示bumpscale
@@ -67,7 +68,7 @@ namespace  GUIExtension
                 if(mapinfo.textureValue != null) bumpScale = FindProperty(scaleValue, MaterialProperties, true);
             }
 
-            MaterialEditor.TexturePropertySingleLine(MakeMapGUIContent(mapinfo), mapinfo, bumpScale);
+            MaterialEditor.TexturePropertySingleLine(MakeMapGUIContent(mapinfo,toolTip), mapinfo, bumpScale);
             
             return mapinfo;
         }
@@ -109,13 +110,7 @@ namespace  GUIExtension
 
         MaterialProperty AlbedoPropertyShow()
         {
-            MaterialProperty albedo = FindProperty("_MainTex", MaterialProperties, true);
-            MaterialProperty tint = FindProperty("_Tint", MaterialProperties, true);
-            
-            //GUIContent content = MakeGUIContent(albedo, "this is a main texture");
-            //重载函数
-            MaterialEditor.TexturePropertySingleLine(MakeMapGUIContent(albedo, "this is a main texture"), albedo, tint);
-            return albedo;
+            return MakerMapWithScaleShow("_MainTex", "_Tint", false, "Main Texture");;
         }
 
         void NormalShow()
@@ -140,7 +135,7 @@ namespace  GUIExtension
         {
             Switchkeyword source = Switchkeyword.UNIFORM;
             if (IsKeyEnable(keyword_smoothness_albedo))
-                source = Switchkeyword.SMOOTHNESS;
+                source = Switchkeyword.ALBEDO;
 
             if(IsKeyEnable(keyword_smoothness_metallic))
                 source = Switchkeyword.METALLIC;
@@ -158,7 +153,7 @@ namespace  GUIExtension
             {
                 //RecordAction("123124");//取消
                 SetKeyword(keyword_smoothness_metallic, source == Switchkeyword.METALLIC);
-                SetKeyword(keyword_smoothness_albedo, source == Switchkeyword.SMOOTHNESS);
+                SetKeyword(keyword_smoothness_albedo, source == Switchkeyword.ALBEDO);
             }
 
             EditorGUI.indentLevel -= 3;
@@ -171,6 +166,7 @@ namespace  GUIExtension
             SecondaryLabel();
             var detail = DetailTexShow();
             DetailNormalShow();
+            EmissionShow();
             MaterialEditor.TextureScaleOffsetProperty(detail);
         }
         void SecondaryLabel()
@@ -186,6 +182,29 @@ namespace  GUIExtension
         void DetailNormalShow()
         {
             MakerMapWithScaleShow("_DetailNormalMap", "_DetailBumpScale");
+        }
+
+        void EmissionShow()
+        {
+            EditorGUI.BeginChangeCheck();
+
+            MaterialProperty mapinfo = FindProperty("_EmissionMap", MaterialProperties, true);
+            //没有纹理时不想显示bumpscale
+            MaterialProperty emission = FindProperty("_Emission", MaterialProperties, true);
+            MakeMapGUIContent(emission, null);
+            this.MaterialEditor.TexturePropertyWithHDRColor
+            (
+                MakeMapGUIContent(mapinfo, null),
+                mapinfo,
+                emission,
+                config,
+                false
+            );
+            if (EditorGUI.EndChangeCheck())
+            {
+                SetKeyword("_EMISSION_MAP", mapinfo.textureValue);
+            }
+
         }
         #endregion
 
