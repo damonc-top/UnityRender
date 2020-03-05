@@ -1,0 +1,15 @@
+ManifestFileVersion: 0
+CRC: 3746987658
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 3921b04ab391981cc5fb25e38b2bedcf
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 31d6cfe0d16ae931b73c59d7e0c089c0
+HashAppended: 0
+ClassTypes: []
+Assets:
+- Assets/5BaseTexture/DetailScene.unity
+Dependencies:
+- D:/UnityRender/UnityRender/Assets/MyAssets/detail

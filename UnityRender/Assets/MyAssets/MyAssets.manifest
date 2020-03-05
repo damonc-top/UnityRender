@@ -1,0 +1,11 @@
+ManifestFileVersion: 0
+CRC: 2569978673
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: detail
+      Dependencies: {}
+    Info_1:
+      Name: detailscene
+      Dependencies:
+        Dependency_0: detail
