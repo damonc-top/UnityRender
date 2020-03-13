@@ -166,6 +166,7 @@ namespace  GUIExtension
             SecondaryLabel();
             var detail = DetailTexShow();
             DetailNormalShow();
+            OcclusionShow();
             EmissionShow();
             MaterialEditor.TextureScaleOffsetProperty(detail);
         }
@@ -204,7 +205,16 @@ namespace  GUIExtension
             {
                 SetKeyword("_EMISSION_MAP", mapinfo.textureValue);
             }
+        }
 
+        void OcclusionShow()
+        {
+            EditorGUI.BeginChangeCheck();
+            MaterialProperty mp = MakerMapWithScaleShow("_OcclusionMap", "_OcclusionStrength", false, "遮挡纹理");
+            if (EditorGUI.EndChangeCheck())
+            {
+                SetKeyword("_OCCLUSION_MAP", mp.textureValue);
+            }
         }
         #endregion
 

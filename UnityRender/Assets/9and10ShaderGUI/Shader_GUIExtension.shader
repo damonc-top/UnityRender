@@ -18,6 +18,9 @@
 
 		[NoScaleOffset]_EmissionMap("Emission", 2D) = "white"{}
 		_Emission("Emission", color) = (0,0,0)
+
+		[NoScaleOffset]_OcclusionMap("OcclusionMap", 2D) = "white"{}
+		_OcclusionStrength("OcclusionStrength", Range(0,1)) = 0
 	}
 
 	CGINCLUDE
@@ -40,9 +43,10 @@
 			#pragma multi_compile _ SHADOWS_SCREEN
 			#pragma multi_compile _ VERTEXLIGHT_ON
 			//#pragma multi_compile _ _MATALLIC_MAP
-			#pragma shader_feature _METALLIC_MAP
+			#pragma shader_feature _ _METALLIC_MAP
 			#pragma shader_feature _ _SMOOTHNESS_ALBEDO _SMOOTHNESS_METALLIC
 			#pragma shader_feature _ _EMISSION_MAP
+			#pragma shader_feature _ _OCCLUSION_MAP
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram

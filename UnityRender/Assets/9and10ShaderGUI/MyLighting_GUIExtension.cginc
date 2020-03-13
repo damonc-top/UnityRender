@@ -15,9 +15,9 @@ float4 _Tint;
 sampler2D _DetailTex, _DetailNormalMap;
 float _BumpScale, _DetailBumpScale;
 
-sampler2D _EmissionMap;
+sampler2D _OcclusionMap, _EmissionMap;
 
-float _Metallic, _Smoothness;
+float _Metallic, _Smoothness, _OcclusionStrength;
 float3 _Emission;
 
 
@@ -43,13 +43,13 @@ struct Interpolators {
 	float3 worldPos : TEXCOORD4;
 
 #if defined(VERTEXLIGHT_ON)
-	float3 vertexLightColor : TEXCOORD6;
+	float3 vertexLightColor : TEXCOORD5;
 #endif
 
 	SHADOW_COORDS(6)
 };
 
-//采样纹理(灰度图)r
+//采样金属纹理(灰度图)r
 float GetMetallic(Interpolators i) {
 #if defined(_METALLIC_MAP)
 	return tex2D(_MetallicMap, i.uv.xy).r;
@@ -57,7 +57,13 @@ float GetMetallic(Interpolators i) {
 	return _Metallic;
 #endif
 }
-
+float GetOcclusion(Interpolators i) {
+#ifdef _OCCLUSION_MAP
+	return tex2D(_OcclusionMap, i.uv).g * _OcclusionStrength;
+#endif
+	return 1;
+}
+//采样光滑纹理a
 float GetSmoothness(Interpolators i) {
 	float smoothness = 1;
 #if defined(_SMOOTHNESS_ALBEDO)
@@ -67,6 +73,7 @@ float GetSmoothness(Interpolators i) {
 #endif
 	return smoothness * _Smoothness;
 }
+//采样自发光
 float3 GetEmission(Interpolators i) {
 #ifdef FORWARD_BASE_PASS
 	#ifdef _EMISSION_MAP
@@ -127,7 +134,7 @@ UnityLight CreateLight(Interpolators i) {
 #endif
 
 	UNITY_LIGHT_ATTENUATION(attenuation, i, i.worldPos);
-
+	attenuation *= GetOcclusion(i);
 	light.color = _LightColor0.rgb * attenuation;
 	light.ndotl = DotClamped(i.normal, light.dir);
 	return light;
