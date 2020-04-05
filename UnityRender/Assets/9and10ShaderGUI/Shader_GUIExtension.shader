@@ -21,6 +21,9 @@
 
 		[NoScaleOffset]_OcclusionMap("OcclusionMap", 2D) = "white"{}
 		_OcclusionStrength("OcclusionStrength", Range(0,1)) = 0
+
+		[NoScaleOffset]_DetailMask("DetailMask",2D) = "white"{}
+
 	}
 
 	CGINCLUDE
@@ -47,6 +50,7 @@
 			#pragma shader_feature _ _SMOOTHNESS_ALBEDO _SMOOTHNESS_METALLIC
 			#pragma shader_feature _ _EMISSION_MAP
 			#pragma shader_feature _ _OCCLUSION_MAP
+			#pragma shader_feature _ _DETAIL_MASK
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram

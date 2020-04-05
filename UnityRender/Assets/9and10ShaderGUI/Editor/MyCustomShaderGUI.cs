@@ -167,6 +167,7 @@ namespace  GUIExtension
             var detail = DetailTexShow();
             DetailNormalShow();
             OcclusionShow();
+            DetailMaskShow();
             EmissionShow();
             MaterialEditor.TextureScaleOffsetProperty(detail);
         }
@@ -195,7 +196,7 @@ namespace  GUIExtension
             MakeMapGUIContent(emission, null);
             this.MaterialEditor.TexturePropertyWithHDRColor
             (
-                MakeMapGUIContent(mapinfo, null),
+                MakeMapGUIContent(mapinfo, "自发光纹理"),
                 mapinfo,
                 emission,
                 config,
@@ -216,9 +217,18 @@ namespace  GUIExtension
                 SetKeyword("_OCCLUSION_MAP", mp.textureValue);
             }
         }
+
+        void DetailMaskShow()
+        {
+            EditorGUI.BeginChangeCheck();
+            MaterialProperty detail = FindProperty("_DetailMask", MaterialProperties, true);
+            this.MaterialEditor.TexturePropertySingleLine(MakeMapGUIContent(detail, "遮罩纹理"), detail);
+            if (EditorGUI.EndChangeCheck())
+            {
+                SetKeyword("_DETAIL_MASK", detail.textureValue);
+            }
+        }
         #endregion
-
-
     }
 }
 
