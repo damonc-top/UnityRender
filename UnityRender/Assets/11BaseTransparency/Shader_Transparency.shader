@@ -57,7 +57,7 @@
 
 			#define FORWARD_BASE_PASS
 
-			#include "MyLighting_GUIExtension.cginc"
+			#include "MyLighting_Transparency.cginc"
 
 			ENDCG
 		}
@@ -75,16 +75,11 @@
 			#pragma target 3.0
 
 			#pragma multi_compile_fwdadd_fullshadows
-					#pragma shader_feature _ _METALLIC_MAP
-			#pragma shader_feature _ _SMOOTHNESS_ALBEDO _SMOOTHNESS_METALLIC
-			#pragma shader_feature _ _EMISSION_MAP
-			#pragma shader_feature _ _OCCLUSION_MAP
-			#pragma shader_feature _ _DETAIL_MASK
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
-			#include "MyLighting_GUIExtension.cginc"
+			#include "MyLighting_Transparency.cginc"
 
 			ENDCG
 		}
@@ -100,7 +95,7 @@
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
-			#include "MyShadow_GUIExtension.cginc"
+			#include "MyShadow_Transparency.cginc"
 
 			ENDCG
 		}
