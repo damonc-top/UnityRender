@@ -24,6 +24,7 @@
 
 		[NoScaleOffset]_DetailMask("DetailMask",2D) = "white"{}
 
+		_AlphaCutOff("AlphaCutOff", Range(0, 1)) = 0.5
 	}
 
 	CGINCLUDE
@@ -51,6 +52,7 @@
 			#pragma shader_feature _ _EMISSION_MAP
 			#pragma shader_feature _ _OCCLUSION_MAP
 			#pragma shader_feature _ _DETAIL_MASK
+			#pragma shader_feature _ _RENDER_CUTOUT
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram

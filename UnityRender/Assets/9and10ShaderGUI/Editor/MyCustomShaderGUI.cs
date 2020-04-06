@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace  GUIExtension
 {
@@ -10,6 +10,11 @@ namespace  GUIExtension
         UNIFORM,
         ALBEDO,
         METALLIC
+    }
+    enum RenderMode
+    {
+        Opaque,
+        Cutout
     }
     public class MyCustomShaderGUI : UnityEditor.ShaderGUI 
     {
@@ -98,6 +103,7 @@ namespace  GUIExtension
             var albedo = AlbedoPropertyShow();
             MetallicMapShow();
             //MetallicShow();
+            //AlphaCutOffShow();
             SmoothnessShow();
             NormalShow();
             MaterialEditor.TextureScaleOffsetProperty(albedo);
@@ -169,6 +175,7 @@ namespace  GUIExtension
             OcclusionShow();
             DetailMaskShow();
             EmissionShow();
+            SetRenderMode();
             MaterialEditor.TextureScaleOffsetProperty(detail);
         }
         void SecondaryLabel()
@@ -226,6 +233,31 @@ namespace  GUIExtension
             if (EditorGUI.EndChangeCheck())
             {
                 SetKeyword("_DETAIL_MASK", detail.textureValue);
+            }
+        }
+        void AlphaCutOffShow()
+        {
+            MakeShaderSpecialPropertyShow("_AlphaCutOff");
+        }
+
+        void SetRenderMode()
+        {
+            RenderMode mode = RenderMode.Opaque;
+            if (IsKeyEnable("_RENDER_CUTOUT"))
+            {
+                mode = RenderMode.Cutout;
+                AlphaCutOffShow();
+            }
+            EditorGUI.BeginChangeCheck();
+            GUIContent gc = new GUIContent("RenderMode");
+            mode = (RenderMode)EditorGUILayout.EnumPopup(gc, mode);
+            if (EditorGUI.EndChangeCheck())
+            {
+                SetKeyword("_RENDER_CUTOUT", mode == RenderMode.Cutout);
+                RenderQueue queue = mode == RenderMode.Opaque? RenderQueue.Geometry:RenderQueue.AlphaTest;
+                targetMaterial.renderQueue = (int)queue;
+                string renderType = mode == RenderMode.Opaque ? "" : "TransparentCutout";
+                targetMaterial.SetOverrideTag("RenderType", renderType);
             }
         }
         #endregion

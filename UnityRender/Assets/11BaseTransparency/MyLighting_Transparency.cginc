@@ -17,7 +17,7 @@ float _BumpScale, _DetailBumpScale;
 
 sampler2D _OcclusionMap, _EmissionMap, _DetailMask;
 
-float _Metallic, _Smoothness, _OcclusionStrength;
+float _Metallic, _Smoothness, _OcclusionStrength, _AlphaCutOff;
 float3 _Emission;
 
 
@@ -249,6 +249,10 @@ void InitializeFragmentNormal(inout Interpolators i) {
 }
 
 float4 MyFragmentProgram(Interpolators i) : SV_TARGET{
+	float alpha = GetAlpha(i);
+#ifdef _RENDER_CUTOUT
+	clip(alpha - _AlphaCutOff);
+#endif
 	InitializeFragmentNormal(i);
 
 	float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
