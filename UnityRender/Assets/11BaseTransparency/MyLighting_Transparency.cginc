@@ -250,7 +250,7 @@ void InitializeFragmentNormal(inout Interpolators i) {
 
 float4 MyFragmentProgram(Interpolators i) : SV_TARGET{
 	float alpha = GetAlpha(i);
-#ifdef _RENDER_CUTOUT
+#ifdef _RENDERING_CUTOUT
 	clip(alpha - _AlphaCutOff);
 #endif
 	InitializeFragmentNormal(i);
@@ -273,7 +273,9 @@ float4 MyFragmentProgram(Interpolators i) : SV_TARGET{
 		CreateLight(i), CreateIndirectLight(i, viewDir)
 	);
 	final.rgb += GetEmission(i);
-
+#ifdef _RENDERING_FADE
+	final.a = alpha;
+#endif
 	return final;
 }
 

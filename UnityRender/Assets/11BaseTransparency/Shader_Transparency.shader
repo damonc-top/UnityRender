@@ -25,6 +25,11 @@
 		[NoScaleOffset]_DetailMask("DetailMask",2D) = "white"{}
 
 		_AlphaCutOff("AlphaCutOff", Range(0, 1)) = 0.5
+
+		[HideInspector] _SrcBlend("SrcBlend", float) = 1
+		[HideInspector]	_DstBlend("DstBlend", float) = 0
+
+		_ZWrite("ZWrite", float) = 1
 	}
 
 	CGINCLUDE
@@ -39,7 +44,8 @@
 			Tags {
 				"LightMode" = "ForwardBase"
 			}
-
+			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite [_ZWrite]
 			CGPROGRAM
 
 			#pragma target 3.0
@@ -52,7 +58,7 @@
 			#pragma shader_feature _ _EMISSION_MAP
 			#pragma shader_feature _ _OCCLUSION_MAP
 			#pragma shader_feature _ _DETAIL_MASK
-			#pragma shader_feature _ _RENDER_CUTOUT
+			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
@@ -69,7 +75,7 @@
 				"LightMode" = "ForwardAdd"
 			}
 
-			Blend One One
+			Blend SrcAlpha One
 			ZWrite Off
 
 			CGPROGRAM
@@ -77,6 +83,7 @@
 			#pragma target 3.0
 
 			#pragma multi_compile_fwdadd_fullshadows
+			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram

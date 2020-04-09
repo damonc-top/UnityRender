@@ -13,9 +13,22 @@ namespace  GUIExtension
     }
     enum RenderMode
     {
-        Opaque,
-        Cutout
+        Opaque=0, Cutout, Fade
     }
+    class RenderingSettings
+    {
+        public RenderQueue Queue;
+        public string RenderType;
+        public BlendMode SrcBlend, DstBlend;
+        public bool ZWrite;
+        public static RenderingSettings[] modes =
+        {
+            new RenderingSettings(){Queue = RenderQueue.Geometry, RenderType = "", SrcBlend = BlendMode.One, DstBlend = BlendMode.Zero, ZWrite = true},
+            new RenderingSettings() { Queue = RenderQueue.AlphaTest, RenderType = "TransparentCutout", SrcBlend = BlendMode.One, DstBlend = BlendMode.Zero, ZWrite = true},
+            new RenderingSettings() { Queue = RenderQueue.Transparent, RenderType = "Transparent", SrcBlend = BlendMode.SrcAlpha, DstBlend = BlendMode.OneMinusDstAlpha, ZWrite = false},
+        };
+    }
+
     public class MyCustomShaderGUI : UnityEditor.ShaderGUI 
     {
         Material targetMaterial;
@@ -26,6 +39,8 @@ namespace  GUIExtension
         private string keyword_smoothness_albedo = "_SMOOTHNESS_ALBEDO";
         private string keyword_smoothness_metallic = "_SMOOTHNESS_METALLIC";
         private ColorPickerHDRConfig config = new ColorPickerHDRConfig(0, 99, 1 / 99f, 3f);
+
+        
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
@@ -243,21 +258,29 @@ namespace  GUIExtension
         void SetRenderMode()
         {
             RenderMode mode = RenderMode.Opaque;
-            if (IsKeyEnable("_RENDER_CUTOUT"))
+            if (IsKeyEnable("_RENDERING_CUTOUT"))
             {
                 mode = RenderMode.Cutout;
                 AlphaCutOffShow();
+            }else if (IsKeyEnable("_RENDERING_FADE"))
+            {
+                mode = RenderMode.Fade;
             }
             EditorGUI.BeginChangeCheck();
             GUIContent gc = new GUIContent("RenderMode");
             mode = (RenderMode)EditorGUILayout.EnumPopup(gc, mode);
             if (EditorGUI.EndChangeCheck())
             {
-                SetKeyword("_RENDER_CUTOUT", mode == RenderMode.Cutout);
-                RenderQueue queue = mode == RenderMode.Opaque? RenderQueue.Geometry:RenderQueue.AlphaTest;
-                targetMaterial.renderQueue = (int)queue;
-                string renderType = mode == RenderMode.Opaque ? "" : "TransparentCutout";
-                targetMaterial.SetOverrideTag("RenderType", renderType);
+                SetKeyword("_RENDERING_CUTOUT", mode == RenderMode.Cutout);
+                SetKeyword("_RENDERING_FADE", mode == RenderMode.Fade);
+                //RenderQueue queue = mode == RenderMode.Opaque? RenderQueue.Geometry:RenderQueue.AlphaTest;
+                //string renderType = mode == RenderMode.Opaque ? "" : "TransparentCutout";
+                RenderingSettings settings = RenderingSettings.modes[(int)mode];
+                targetMaterial.renderQueue = (int)settings.Queue;
+                targetMaterial.SetOverrideTag("RenderType", settings.RenderType);
+                targetMaterial.SetInt("_SrcBlend", (int)settings.SrcBlend);
+                targetMaterial.SetInt("_DstBlend", (int)settings.DstBlend);
+                targetMaterial.SetInt("_ZWrite", settings.ZWrite?1:0);
             }
         }
         #endregion
