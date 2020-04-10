@@ -58,7 +58,7 @@
 			#pragma shader_feature _ _EMISSION_MAP
 			#pragma shader_feature _ _OCCLUSION_MAP
 			#pragma shader_feature _ _DETAIL_MASK
-			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE
+			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE _RENDERING_TRANSPARENT
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram

@@ -13,7 +13,7 @@ namespace  GUIExtension
     }
     enum RenderMode
     {
-        Opaque=0, Cutout, Fade
+        Opaque=0, Cutout, Fade, Transparent
     }
     class RenderingSettings
     {
@@ -26,6 +26,7 @@ namespace  GUIExtension
             new RenderingSettings(){Queue = RenderQueue.Geometry, RenderType = "", SrcBlend = BlendMode.One, DstBlend = BlendMode.Zero, ZWrite = true},
             new RenderingSettings() { Queue = RenderQueue.AlphaTest, RenderType = "TransparentCutout", SrcBlend = BlendMode.One, DstBlend = BlendMode.Zero, ZWrite = true},
             new RenderingSettings() { Queue = RenderQueue.Transparent, RenderType = "Transparent", SrcBlend = BlendMode.SrcAlpha, DstBlend = BlendMode.OneMinusDstAlpha, ZWrite = false},
+            new RenderingSettings() { Queue = RenderQueue.Transparent, RenderType = "Transparent", SrcBlend = BlendMode.One, DstBlend = BlendMode.OneMinusDstAlpha, ZWrite = false},
         };
     }
 
@@ -265,6 +266,9 @@ namespace  GUIExtension
             }else if (IsKeyEnable("_RENDERING_FADE"))
             {
                 mode = RenderMode.Fade;
+            }else if (IsKeyEnable("_RENDERING_TRANSPARENT"))
+            {
+                mode = RenderMode.Transparent;
             }
             EditorGUI.BeginChangeCheck();
             GUIContent gc = new GUIContent("RenderMode");
@@ -273,6 +277,7 @@ namespace  GUIExtension
             {
                 SetKeyword("_RENDERING_CUTOUT", mode == RenderMode.Cutout);
                 SetKeyword("_RENDERING_FADE", mode == RenderMode.Fade);
+                SetKeyword("_RENDERING_TRANSPARENT", mode == RenderMode.Transparent);
                 //RenderQueue queue = mode == RenderMode.Opaque? RenderQueue.Geometry:RenderQueue.AlphaTest;
                 //string renderType = mode == RenderMode.Opaque ? "" : "TransparentCutout";
                 RenderingSettings settings = RenderingSettings.modes[(int)mode];
@@ -280,7 +285,7 @@ namespace  GUIExtension
                 targetMaterial.SetOverrideTag("RenderType", settings.RenderType);
                 targetMaterial.SetInt("_SrcBlend", (int)settings.SrcBlend);
                 targetMaterial.SetInt("_DstBlend", (int)settings.DstBlend);
-                targetMaterial.SetInt("_ZWrite", settings.ZWrite?1:0);
+                targetMaterial.SetInt("_ZWrite", settings.ZWrite ? 1 : 0);
             }
         }
         #endregion
