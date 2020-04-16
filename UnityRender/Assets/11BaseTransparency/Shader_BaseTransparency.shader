@@ -1,4 +1,4 @@
-﻿Shader "Custom/My First Lighting Shader" {
+﻿Shader "Custom/Shader_BaseTransparency" {
 
 	Properties {
 		_Tint ("Tint", Color) = (1, 1, 1, 1)
@@ -66,7 +66,7 @@
 
 			#define FORWARD_BASE_PASS
 
-			#include "My Lighting.cginc"
+			#include "MyLighting_Transparency.cginc"
 
 			ENDCG
 		}
@@ -96,7 +96,7 @@
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
-			#include "My Lighting.cginc"
+			#include "MyLighting_Transparency.cginc"
 
 			ENDCG
 		}
@@ -109,20 +109,17 @@
 			CGPROGRAM
 
 			#pragma target 3.0
-
-			#pragma shader_feature _RENDERING_CUTOUT
-			#pragma shader_feature _SMOOTHNESS_ALBEDO
-
+			
 			#pragma multi_compile_shadowcaster
 
 			#pragma vertex MyShadowVertexProgram
 			#pragma fragment MyShadowFragmentProgram
 
-			#include "My Shadows.cginc"
+			#include "MyShadow_Transparency.cginc"
 
 			ENDCG
 		}
 	}
 
-	CustomEditor "MyLightingShaderGUI"
+	CustomEditor "GUIExtension.MyCustomShaderGUI"
 }

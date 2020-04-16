@@ -1,46 +1,75 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+ï»¿#if !defined(MY_SHADOW_TRANSPARENCY_INCLUDED)
+#define MY_SHADOW_TRANSPARENCY_INCLUDED
 
-#if !defined(MY_SHADOW_TRANSPARENCY_INCLUDE)
-	#define MY_SHADOW_TRANSPARENCY_INCLUDE
+#include "UnityCG.cginc"
 
-	#include "UnityCG.cginc"
+#if defined(_RENDERING_CUTOUT) && !defined(_SMOOTHNESS_ALBEDO)
+	#define SHADOWS_NEED_UV 1
+#endif
 
-	struct InputData {
-		float4 position : POSITION;
-		float3 normal :	NORMAL;
-	};
+float4 _Tint;
+sampler2D _MainTex;
+float4 _MainTex_ST;
+float _AlphaCutoff;
 
+struct VertexData {
+	float4 position : POSITION;
+	float3 normal : NORMAL;
+	float2 uv : TEXCOORD0;
+};
 
-	#if defined(SHADOWS_CUBE)
-		struct Interplotars {
-			float4 position : SV_POSITION;
-			float3 lightVec : TEXCOORD0;
-		};
-
-		Interplotars MyVertexProgram(InputData v){
-			Interplotars i;
-			i.position = UnityObjectToClipPos(v.position);
-			i.lightVec = mul(unity_ObjectToWorld, v.position).xyz - _LightPositionRange.xyz;
-			//float4 position = UnityClipSpaceShadowCasterPos(i.position, i.normal);//·½Ïò¹âÔ´£º¼òµ¥µÄ²Ã¼ô¿Õ¼ä¶¥µã×ø±ê
-			return	i;
-		}
-
-		half4 MyFragmentProgram(Interplotars i) : SV_TARGET{
-			float depth = length(i.lightVec) + unity_LightShadowBias.x;
-			depth *= _LightPositionRange.w;
-			return UnityEncodeCubeShadowDepth(depth);
-		}
-
-	#else
-		float4 MyVertexProgram(InputData i) : SV_POSITION{
-			//float4 position = UnityObjectToClipPos(i.position);
-			float4 position = UnityClipSpaceShadowCasterPos(i.position, i.normal);
-			return	UnityApplyLinearShadowBias(position);
-		}
-
-		half4 MyFragmentProgram() : SV_TARGET{
-			return 0;
-		}
+struct Interpolators {
+	float4 position : SV_POSITION;
+	#if SHADOWS_NEED_UV
+		float2 uv : TEXCOORD0;
 	#endif
+	#if defined(SHADOWS_CUBE)
+		float3 lightVec : TEXCOORD1;
+	#endif
+};
+
+float GetAlpha (Interpolators i) {
+	float alpha = _Tint.a;
+	#if SHADOWS_NEED_UV
+		alpha *= tex2D(_MainTex, i.uv.xy).a;
+	#endif
+	return alpha;
+}
+
+Interpolators MyShadowVertexProgram(VertexData v) {
+	Interpolators i;
+	#if defined(SHADOWS_CUBE)
+		i.position = UnityObjectToClipPos(v.position);
+		i.lightVec =
+			mul(unity_ObjectToWorld, v.position).xyz - _LightPositionRange.xyz;
+	#else
+		i.position = UnityClipSpaceShadowCasterPos(v.position.xyz, v.normal);
+		i.position = UnityApplyLinearShadowBias(i.position);
+	#endif
+
+	#if SHADOWS_NEED_UV
+		i.uv = TRANSFORM_TEX(v.uv, _MainTex);
+	#endif
+	return i;
+}
+
+float4 MyShadowFragmentProgram(Interpolators i) : SV_TARGET {
+	float alpha = GetAlpha(i);
+	#if defined(_RENDERING_CUTOUT)
+		clip(alpha - _AlphaCutoff);
+	#endif
+	
+	#if defined(SHADOWS_CUBE)
+		float depth = length(i.lightVec) + unity_LightShadowBias.x;
+		depth *= _LightPositionRange.w;
+		return UnityEncodeCubeShadowDepth(depth);
+	#else
+		return 0;
+	#endif
+}
+
+#if defined(SHADOWS_CUBE)
+
+#endif
 
 #endif

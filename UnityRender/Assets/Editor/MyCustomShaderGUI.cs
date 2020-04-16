@@ -1,5 +1,4 @@
-﻿
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -23,14 +22,38 @@ namespace  GUIExtension
         public bool ZWrite;
         public static RenderingSettings[] modes =
         {
-            new RenderingSettings(){Queue = RenderQueue.Geometry, RenderType = "", SrcBlend = BlendMode.One, DstBlend = BlendMode.Zero, ZWrite = true},
-            new RenderingSettings() { Queue = RenderQueue.AlphaTest, RenderType = "TransparentCutout", SrcBlend = BlendMode.One, DstBlend = BlendMode.Zero, ZWrite = true},
-            new RenderingSettings() { Queue = RenderQueue.Transparent, RenderType = "Transparent", SrcBlend = BlendMode.SrcAlpha, DstBlend = BlendMode.OneMinusDstAlpha, ZWrite = false},
-            new RenderingSettings() { Queue = RenderQueue.Transparent, RenderType = "Transparent", SrcBlend = BlendMode.One, DstBlend = BlendMode.OneMinusDstAlpha, ZWrite = false},
+            new RenderingSettings(){
+                Queue = RenderQueue.Geometry, 
+                RenderType = "", 
+                SrcBlend = BlendMode.One, 
+                DstBlend = BlendMode.Zero, 
+                ZWrite = true
+            },
+            new RenderingSettings(){
+                Queue = RenderQueue.AlphaTest, 
+                RenderType = "TransparentCutout", 
+                SrcBlend = BlendMode.One, 
+                DstBlend = BlendMode.Zero, 
+                ZWrite = true
+            },
+            new RenderingSettings(){ 
+                Queue = RenderQueue.Transparent, 
+                RenderType = "Transparent", 
+                SrcBlend = BlendMode.SrcAlpha, 
+                DstBlend = BlendMode.OneMinusSrcAlpha, 
+                ZWrite = false
+            },
+            new RenderingSettings(){
+                Queue = RenderQueue.Transparent, 
+                RenderType = "Transparent", 
+                SrcBlend = BlendMode.One, 
+                DstBlend = BlendMode.OneMinusSrcAlpha, 
+                ZWrite = false
+            },
         };
     }
 
-    public class MyCustomShaderGUI : UnityEditor.ShaderGUI 
+    public class MyCustomShaderGUI : ShaderGUI
     {
         Material targetMaterial;
         MaterialEditor MaterialEditor;
@@ -40,9 +63,7 @@ namespace  GUIExtension
         private string keyword_smoothness_albedo = "_SMOOTHNESS_ALBEDO";
         private string keyword_smoothness_metallic = "_SMOOTHNESS_METALLIC";
         private ColorPickerHDRConfig config = new ColorPickerHDRConfig(0, 99, 1 / 99f, 3f);
-
         
-
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
             this.targetMaterial = materialEditor.target as Material;
@@ -68,10 +89,10 @@ namespace  GUIExtension
         }
         GUIContent MakeLabelGUIContent(MaterialProperty mp, string tooltip = null)
         {
-            GUIContent content = new GUIContent(mp.displayName);
-            content.tooltip = tooltip;
+            GUIContent content = new GUIContent(mp.displayName, tooltip);
             return content;
         }
+
         void MakeShaderSpecialPropertyShow(string propertyName,string tooltip = null)
         {
             MaterialProperty property = FindProperty(propertyName, MaterialProperties, true);
@@ -115,6 +136,7 @@ namespace  GUIExtension
         #region Main Map Show
         void DoMain()
         {
+            SetRenderMode();
             MainMapLabel();
             var albedo = AlbedoPropertyShow();
             MetallicMapShow();
@@ -191,7 +213,6 @@ namespace  GUIExtension
             OcclusionShow();
             DetailMaskShow();
             EmissionShow();
-            SetRenderMode();
             MaterialEditor.TextureScaleOffsetProperty(detail);
         }
         void SecondaryLabel()
@@ -251,9 +272,11 @@ namespace  GUIExtension
                 SetKeyword("_DETAIL_MASK", detail.textureValue);
             }
         }
+        #endregion
+
         void AlphaCutOffShow()
         {
-            MakeShaderSpecialPropertyShow("_AlphaCutOff");
+            MakeShaderSpecialPropertyShow("_AlphaCutoff");
         }
 
         void SetRenderMode()
@@ -263,10 +286,12 @@ namespace  GUIExtension
             {
                 mode = RenderMode.Cutout;
                 AlphaCutOffShow();
-            }else if (IsKeyEnable("_RENDERING_FADE"))
+            }
+            else if (IsKeyEnable("_RENDERING_FADE"))
             {
                 mode = RenderMode.Fade;
-            }else if (IsKeyEnable("_RENDERING_TRANSPARENT"))
+            }
+            else if (IsKeyEnable("_RENDERING_TRANSPARENT"))
             {
                 mode = RenderMode.Transparent;
             }
@@ -288,7 +313,6 @@ namespace  GUIExtension
                 targetMaterial.SetInt("_ZWrite", settings.ZWrite ? 1 : 0);
             }
         }
-        #endregion
     }
 }
 
