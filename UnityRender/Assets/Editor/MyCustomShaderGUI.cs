@@ -312,6 +312,21 @@ namespace  GUIExtension
                 targetMaterial.SetInt("_DstBlend", (int)settings.DstBlend);
                 targetMaterial.SetInt("_ZWrite", settings.ZWrite ? 1 : 0);
             }
+
+            DoSimetransparentShadow(mode);
+        }
+
+        void DoSimetransparentShadow(RenderMode mode)
+        {
+            if (mode == RenderMode.Fade || mode == RenderMode.Transparent)
+            {
+                EditorGUI.BeginChangeCheck();
+                bool enable = EditorGUILayout.Toggle(new GUIContent("Semitransparent Shadow"), IsKeyEnable("_SEMITRANSPARENT_SHADOWS"));
+                if (EditorGUI.EndChangeCheck())
+                {
+                    SetKeyword("_SEMITRANSPARENT_SHADOWS", enable);
+                }
+            }
         }
     }
 }

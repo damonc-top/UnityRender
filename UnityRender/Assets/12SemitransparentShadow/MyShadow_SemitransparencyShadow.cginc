@@ -6,7 +6,12 @@
 #include "UnityCG.cginc"
 
 #if defined(_RENDERING_FADE) || defined(_RENDERING_TRANSPARENT)
-	#define SHADOWS_SEMITRANSPARENT 1
+	//#define SHADOWS_SEMITRANSPARENT 1
+	#if _SEMITRANSPARENT_SHADOWS
+		#define SHADOWS_SEMITRANSPARENT 1
+	#else
+		#define _RENDERING_CUTOUT
+	#endif
 #endif
 
 #if SHADOWS_SEMITRANSPARENT || defined(_RENDERING_CUTOUT)
@@ -38,7 +43,7 @@ struct InterpolatorsVertex {
 };
 
 struct Interpolators {
-	#if SHADOWS_SEMITRANSPERANT
+	#if SHADOWS_SEMITRANSPARENT
 		UNITY_VPOS_TYPE vpos : VPOS;
 	#else
 		float4 positions : SV_POSITION;
@@ -84,11 +89,10 @@ float4 MyShadowFragmentProgram(Interpolators i) : SV_TARGET{
 		clip(alpha - _AlphaCutoff);
 	#endif
 
-	#if SHADOWS_SEMITRANSPERANT
-		float dither = tex3D(_DitherMaskLOD, float3(i.vpos.xy * 0.01, 0.625)).a;
-		clip(dither ¨C 0.01);
+	#if SHADOWS_SEMITRANSPARENT
+		float dither = tex3D(_DitherMaskLOD, float3(i.vpos.xy * 0.3, alpha * 0.9375)).a;
+		clip(dither - 0.01);
 	#endif
-
 
 	#if defined(SHADOWS_CUBE)
 		float depth = length(i.lightVec) + unity_LightShadowBias.x;
