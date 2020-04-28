@@ -17,6 +17,7 @@
 
 float4 _Tint;
 sampler2D _MainTex;
+sampler3D _DitherMaskLOD;
 float4 _MainTex_ST;
 float _AlphaCutoff;
 
@@ -26,7 +27,7 @@ struct VertexData {
 	float2 uv : TEXCOORD0;
 };
 
-struct Interpolators {
+struct InterpolatorsVertex {
 	float4 position : SV_POSITION;
 #if SHADOWS_NEED_UV
 	float2 uv : TEXCOORD0;
@@ -34,6 +35,22 @@ struct Interpolators {
 #if defined(SHADOWS_CUBE)
 	float3 lightVec : TEXCOORD1;
 #endif
+};
+
+struct Interpolators {
+	#if SHADOWS_SEMITRANSPERANT
+		UNITY_VPOS_TYPE vpos : VPOS;
+	#else
+		float4 positions : SV_POSITION;
+	#endif
+
+	#if SHADOWS_NEED_UV
+		float2 uv : TEXCOORD0;
+	#endif
+
+	#if SHADOWS_CUBE
+		float3 lightVec : TEXCOORD1;
+	#endif
 };
 
 float GetAlpha(Interpolators i) {
@@ -44,8 +61,8 @@ float GetAlpha(Interpolators i) {
 	return alpha;
 }
 
-Interpolators MyShadowVertexProgram(VertexData v) {
-	Interpolators i;
+InterpolatorsVertex  MyShadowVertexProgram(VertexData v) {
+	InterpolatorsVertex  i;
 #if defined(SHADOWS_CUBE)
 	i.position = UnityObjectToClipPos(v.position);
 	i.lightVec =
@@ -67,6 +84,12 @@ float4 MyShadowFragmentProgram(Interpolators i) : SV_TARGET{
 		clip(alpha - _AlphaCutoff);
 	#endif
 
+	#if SHADOWS_SEMITRANSPERANT
+		float dither = tex3D(_DitherMaskLOD, float3(i.vpos.xy * 0.01, 0.625)).a;
+		clip(dither ¨C 0.01);
+	#endif
+
+
 	#if defined(SHADOWS_CUBE)
 		float depth = length(i.lightVec) + unity_LightShadowBias.x;
 		depth *= _LightPositionRange.w;
@@ -75,9 +98,4 @@ float4 MyShadowFragmentProgram(Interpolators i) : SV_TARGET{
 		return 0;
 	#endif
 }
-
-#if defined(SHADOWS_CUBE)
-
-#endif
-
 #endif
