@@ -20,6 +20,7 @@ namespace  GUIExtension
         public string RenderType;
         public BlendMode SrcBlend, DstBlend;
         public bool ZWrite;
+
         public static RenderingSettings[] modes =
         {
             new RenderingSettings(){
@@ -58,6 +59,7 @@ namespace  GUIExtension
         Material targetMaterial;
         MaterialEditor MaterialEditor;
         MaterialProperty[] MaterialProperties;
+        bool isShowCutoffAlpha;
 
         private string keyword_metallic = "_METALLIC_MAP";
         private string keyword_smoothness_albedo = "_SMOOTHNESS_ALBEDO";
@@ -285,7 +287,7 @@ namespace  GUIExtension
             if (IsKeyEnable("_RENDERING_CUTOUT"))
             {
                 mode = RenderMode.Cutout;
-                AlphaCutOffShow();
+                isShowCutoffAlpha = true;
             }
             else if (IsKeyEnable("_RENDERING_FADE"))
             {
@@ -295,6 +297,7 @@ namespace  GUIExtension
             {
                 mode = RenderMode.Transparent;
             }
+            if(isShowCutoffAlpha) AlphaCutOffShow(); 
             EditorGUI.BeginChangeCheck();
             GUIContent gc = new GUIContent("RenderMode");
             mode = (RenderMode)EditorGUILayout.EnumPopup(gc, mode);
@@ -321,7 +324,12 @@ namespace  GUIExtension
             if (mode == RenderMode.Fade || mode == RenderMode.Transparent)
             {
                 EditorGUI.BeginChangeCheck();
-                bool enable = EditorGUILayout.Toggle(new GUIContent("Semitransparent Shadow"), IsKeyEnable("_SEMITRANSPARENT_SHADOWS"));
+                bool enable = EditorGUILayout.Toggle
+                (
+                    new GUIContent("Semitransparent Shadow"), 
+                    IsKeyEnable("_SEMITRANSPARENT_SHADOWS")
+                );
+                if(!enable) isShowCutoffAlpha = true;
                 if (EditorGUI.EndChangeCheck())
                 {
                     SetKeyword("_SEMITRANSPARENT_SHADOWS", enable);
