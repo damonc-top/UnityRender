@@ -297,7 +297,7 @@ namespace  GUIExtension
             {
                 mode = RenderMode.Transparent;
             }
-            if(isShowCutoffAlpha) AlphaCutOffShow(); 
+            if(isShowCutoffAlpha) AlphaCutOffShow();
             EditorGUI.BeginChangeCheck();
             GUIContent gc = new GUIContent("RenderMode");
             mode = (RenderMode)EditorGUILayout.EnumPopup(gc, mode);
@@ -315,7 +315,6 @@ namespace  GUIExtension
                 targetMaterial.SetInt("_DstBlend", (int)settings.DstBlend);
                 targetMaterial.SetInt("_ZWrite", settings.ZWrite ? 1 : 0);
             }
-
             DoSimetransparentShadow(mode);
         }
 
