@@ -89,6 +89,8 @@
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 			#pragma shader_feature _DETAIL_NORMAL_MAP
 
+			#pragma multi_compile _ UNITY_HDR_ON
+
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 

@@ -227,7 +227,7 @@ UnityIndirect CreateIndirectLight(Interpolators i, float3 viewDir) {
 	indirectLight.diffuse = i.vertexLightColor;
 #endif
 
-#if defined(FORWARD_BASE_PASS)
+#if defined(FORWARD_BASE_PASS) || defined(DEFERRED_PASS)
 	indirectLight.diffuse += max(0, ShadeSH9(float4(i.normal, 1)));
 	float3 reflectionDir = reflect(-viewDir, i.normal);
 	Unity_GlossyEnvironmentData envData;
@@ -245,22 +245,22 @@ UnityIndirect CreateIndirectLight(Interpolators i, float3 viewDir) {
 		unity_SpecCube1_ProbePosition,
 		unity_SpecCube1_BoxMin, unity_SpecCube1_BoxMax
 	);
-#if UNITY_SPECCUBE_BLENDING
-	float interpolator = unity_SpecCube0_BoxMin.w;
-	UNITY_BRANCH
-		if (interpolator < 0.99999) {
-			float3 probe1 = Unity_GlossyEnvironment(
-				UNITY_PASS_TEXCUBE_SAMPLER(unity_SpecCube1, unity_SpecCube0),
-				unity_SpecCube0_HDR, envData
-			);
-			indirectLight.specular = lerp(probe1, probe0, interpolator);
-		}
-		else {
-			indirectLight.specular = probe0;
-		}
-#else
-	indirectLight.specular = probe0;
-#endif
+	#if UNITY_SPECCUBE_BLENDING
+		float interpolator = unity_SpecCube0_BoxMin.w;
+		UNITY_BRANCH
+			if (interpolator < 0.99999) {
+				float3 probe1 = Unity_GlossyEnvironment(
+					UNITY_PASS_TEXCUBE_SAMPLER(unity_SpecCube1, unity_SpecCube0),
+					unity_SpecCube0_HDR, envData
+				);
+				indirectLight.specular = lerp(probe1, probe0, interpolator);
+			}
+			else {
+				indirectLight.specular = probe0;
+			}
+	#else
+		indirectLight.specular = probe0;
+	#endif
 
 	float occlusion = GetOcclusion(i);
 	indirectLight.diffuse *= occlusion;
@@ -318,13 +318,17 @@ FragmentOutput MyFragmentProgram(Interpolators i){
 	
 	FragmentOutput output;
 	UNITY_INITIALIZE_OUTPUT(FragmentOutput, output);
-	#ifdef DEFERRED_PASS
+	#ifdef DEFERRED_PASS		
+		#if !defined(UNITY_HDR_ON)
+			color.rgb = exp2(-color.rgb);
+		#endif
 		output.gBuffer0.rgb = albedo;
 		output.gBuffer0.a = GetOcclusion(i);
 		output.gBuffer1.rgb = specularTint;
 		output.gBuffer1.a = GetSmoothness(i);
 		output.gBuffer2 = float4(i.normal * 0.5 + 0.5, 1);
 		output.gBuffer3 = color;
+
 	#else
 		output.color = color;
 	#endif
