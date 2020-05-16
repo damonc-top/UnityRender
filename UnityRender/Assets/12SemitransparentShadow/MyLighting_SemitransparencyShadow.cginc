@@ -266,7 +266,9 @@ UnityIndirect CreateIndirectLight(Interpolators i, float3 viewDir) {
 	indirectLight.diffuse *= occlusion;
 	indirectLight.specular *= occlusion;
 #endif
-
+#if defined(DEFERRED_PASS) && UNITY_ENABLE_REFLECTION_BUFFERS
+	indirectLight.specular = 0;
+#endif
 	return indirectLight;
 }
 
