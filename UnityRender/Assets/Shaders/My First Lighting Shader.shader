@@ -32,6 +32,7 @@
 	CGINCLUDE
 
 	#define BINORMAL_PER_FRAGMENT
+	#define FOG_DISTANCE
 
 	ENDCG
 
@@ -60,6 +61,7 @@
 
 			#pragma multi_compile _ SHADOWS_SCREEN
 			#pragma multi_compile _ VERTEXLIGHT_ON
+			#pragma multi_compile_fog
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
@@ -92,9 +94,42 @@
 			#pragma shader_feature _DETAIL_NORMAL_MAP
 
 			#pragma multi_compile_fwdadd_fullshadows
+			#pragma multi_compile_fog
 			
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
+
+			#include "My Lighting.cginc"
+
+			ENDCG
+		}
+
+		Pass {
+			Tags {
+				"LightMode" = "Deferred"
+			}
+
+			CGPROGRAM
+
+			#pragma target 3.0
+			#pragma exclude_renderers nomrt
+
+			#pragma shader_feature _ _RENDERING_CUTOUT
+			#pragma shader_feature _METALLIC_MAP
+			#pragma shader_feature _ _SMOOTHNESS_ALBEDO _SMOOTHNESS_METALLIC
+			#pragma shader_feature _NORMAL_MAP
+			#pragma shader_feature _OCCLUSION_MAP
+			#pragma shader_feature _EMISSION_MAP
+			#pragma shader_feature _DETAIL_MASK
+			#pragma shader_feature _DETAIL_ALBEDO_MAP
+			#pragma shader_feature _DETAIL_NORMAL_MAP
+
+			#pragma multi_compile _ UNITY_HDR_ON
+
+			#pragma vertex MyVertexProgram
+			#pragma fragment MyFragmentProgram
+
+			#define DEFERRED_PASS
 
 			#include "My Lighting.cginc"
 
@@ -110,7 +145,8 @@
 
 			#pragma target 3.0
 
-			#pragma shader_feature _RENDERING_CUTOUT
+			#pragma shader_feature _ _RENDERING_CUTOUT _RENDERING_FADE _RENDERING_TRANSPARENT
+			#pragma shader_feature _SEMITRANSPARENT_SHADOWS
 			#pragma shader_feature _SMOOTHNESS_ALBEDO
 
 			#pragma multi_compile_shadowcaster

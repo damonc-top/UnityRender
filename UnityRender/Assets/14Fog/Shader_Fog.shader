@@ -31,6 +31,7 @@
 
 	CGINCLUDE
 		#define BINORMAL_PER_FRAGMENT
+		#define FOG_DISTANCE
 	ENDCG
 
 	SubShader{
