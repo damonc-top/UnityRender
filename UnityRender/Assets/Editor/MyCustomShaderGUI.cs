@@ -292,10 +292,16 @@ namespace  GUIExtension
             else if (IsKeyEnable("_RENDERING_FADE"))
             {
                 mode = RenderMode.Fade;
+                isShowCutoffAlpha = false;
             }
             else if (IsKeyEnable("_RENDERING_TRANSPARENT"))
             {
                 mode = RenderMode.Transparent;
+                isShowCutoffAlpha = false;
+            }
+            else
+            {
+                isShowCutoffAlpha = false;
             }
             if(isShowCutoffAlpha) AlphaCutOffShow();
             EditorGUI.BeginChangeCheck();
