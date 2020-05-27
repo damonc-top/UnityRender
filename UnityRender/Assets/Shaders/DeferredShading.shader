@@ -1,52 +1,53 @@
-﻿Shader "Custom/DeferredLights"
-{
-	Properties
-	{
-		_MainTex ("Texture", 2D) = "white" {}
+﻿Shader "Custom/DeferredShading" {
+	
+	Properties {
 	}
-	SubShader
-	{
-		
-		Pass
-		{
-			Blend One One
-			Cull Off
-			ZTest Always
+
+	SubShader {
+
+		Pass {
+			Blend [_SrcBlend] [_DstBlend]
 			ZWrite Off
+
 			CGPROGRAM
 
 			#pragma target 3.0
 			#pragma vertex VertexProgram
 			#pragma fragment FragmentProgram
+
 			#pragma exclude_renderers nomrt
 
 			#pragma multi_compile_lightpass
 			#pragma multi_compile _ UNITY_HDR_ON
 
-			#include "DeferredShading_Lighting.cginc"
-			 
+			#include "MyDeferredShading.cginc"
+
 			ENDCG
 		}
 
-		Pass
-		{
+		Pass {
+			Cull Off
 			ZTest Always
 			ZWrite Off
-			Cull Off 
-			Stencil
-			{
-				Ref[_StencilNonBackground]
-				ReadMask[_StencilNonBackground]
+
+			Stencil {
+				Ref [_StencilNonBackground]
+				ReadMask [_StencilNonBackground]
 				CompBack Equal
 				CompFront Equal
 			}
+
 			CGPROGRAM
 
+			#pragma target 3.0
 			#pragma vertex VertexProgram
 			#pragma fragment FragmentProgram
+
 			#pragma exclude_renderers nomrt
 
 			#include "UnityCG.cginc"
+
+			sampler2D _LightBuffer;
 
 			struct VertexData {
 				float4 vertex : POSITION;
@@ -58,18 +59,14 @@
 				float2 uv : TEXCOORD0;
 			};
 
-			sampler2D _LightBuffer;
-
-			Interpolators VertexProgram(VertexData v) 
-			{
+			Interpolators VertexProgram (VertexData v) {
 				Interpolators i;
 				i.pos = UnityObjectToClipPos(v.vertex);
 				i.uv = v.uv;
 				return i;
 			}
 
-			float4 FragmentProgram(Interpolators i) : SV_Target
-			{
+			float4 FragmentProgram (Interpolators i) : SV_Target {
 				return -log2(tex2D(_LightBuffer, i.uv));
 			}
 
