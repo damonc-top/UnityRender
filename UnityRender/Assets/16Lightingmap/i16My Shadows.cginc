@@ -1,5 +1,5 @@
-﻿#if !defined(MY_SHADOWS_INCLUDED)
-#define MY_SHADOWS_INCLUDED
+﻿#if !defined(I16_MY_SHADOWS_INCLUDED)
+#define I16_MY_SHADOWS_INCLUDED
 
 #include "UnityCG.cginc"
 

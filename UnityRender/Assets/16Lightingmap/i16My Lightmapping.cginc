@@ -1,5 +1,5 @@
-﻿#if !defined(MY_LIGHTMAPPING_INCLUDED)
-#define MY_LIGHTMAPPING_INCLUDED
+﻿#if !defined(I16_MY_LIGHTMAPPING_INCLUDED)
+#define I16_MY_LIGHTMAPPING_INCLUDED
 
 #include "UnityPBSLighting.cginc"
 #include "UnityMetaPass.cginc"

@@ -1,4 +1,4 @@
-﻿Shader "Custom/My First Lighting Shader" {
+﻿Shader "Custom/i17My First Lighting Shader" {
 
 	Properties {
 		_Color ("Tint", Color) = (1, 1, 1, 1)
@@ -67,7 +67,7 @@
 
 			#define FORWARD_BASE_PASS
 
-			#include "My Lighting.cginc"
+			#include "i17My Lighting.cginc"
 
 			ENDCG
 		}
@@ -98,7 +98,7 @@
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
-			#include "My Lighting.cginc"
+			#include "i17My Lighting.cginc"
 
 			ENDCG
 		}
@@ -130,7 +130,7 @@
 
 			#define DEFERRED_PASS
 
-			#include "My Lighting.cginc"
+			#include "i17My Lighting.cginc"
 
 			ENDCG
 		}
@@ -153,7 +153,7 @@
 			#pragma vertex MyShadowVertexProgram
 			#pragma fragment MyShadowFragmentProgram
 
-			#include "My Shadows.cginc"
+			#include "i17My Shadows.cginc"
 
 			ENDCG
 		}
@@ -176,7 +176,7 @@
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 
-			#include "My Lightmapping.cginc"
+			#include "i17My Lightmapping.cginc"
 
 			ENDCG
 		}
