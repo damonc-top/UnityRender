@@ -1,4 +1,4 @@
-﻿Shader "Custom/My First Lighting Shader" {
+﻿Shader "Custom/19_First Lighting Shader" {
 
 	Properties {
 		_Color ("Tint", Color) = (1, 1, 1, 1)
@@ -63,13 +63,15 @@
 
 			#pragma multi_compile_fwdbase
 			#pragma multi_compile_fog
+			#pragma multi_compile_instancing
+			#pragma instancing_options lodfade
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
 			#define FORWARD_BASE_PASS
 
-			#include "Lighting.cginc"
+			#include "19_Lighting.cginc"
 
 			ENDCG
 		}
@@ -102,7 +104,7 @@
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
-			#include "Lighting.cginc"
+			#include "19_Lighting.cginc"
 
 			ENDCG
 		}
@@ -130,13 +132,15 @@
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 
 			#pragma multi_compile_prepassfinal
+			#pragma multi_compile_instancing
+			#pragma instancing_options lodfade
 
 			#pragma vertex MyVertexProgram
 			#pragma fragment MyFragmentProgram
 
 			#define DEFERRED_PASS
 
-			#include "Lighting.cginc"
+			#include "19_Lighting.cginc"
 
 			ENDCG
 		}
@@ -157,11 +161,13 @@
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 
 			#pragma multi_compile_shadowcaster
+			#pragma multi_compile_instancing
+			#pragma instancing_options lodfade
 
 			#pragma vertex MyShadowVertexProgram
 			#pragma fragment MyShadowFragmentProgram
 
-			#include "Shadows.cginc"
+			#include "19_Shadows.cginc"
 
 			ENDCG
 		}
@@ -184,7 +190,7 @@
 			#pragma shader_feature _DETAIL_MASK
 			#pragma shader_feature _DETAIL_ALBEDO_MAP
 
-			#include "Lightmapping.cginc"
+			#include "19_Lightmapping.cginc"
 
 			ENDCG
 		}
