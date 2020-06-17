@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class GPUInstancingTest : MonoBehaviour {
+public class GPUInstancingTest19 : MonoBehaviour {
 
 	public Transform prefab;
 

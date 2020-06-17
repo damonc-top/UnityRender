@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EmissiveOscillator : MonoBehaviour {
+public class EmissiveOscillator18 : MonoBehaviour {
 
 	MeshRenderer emissiveRenderer;
 	Material emissiveMaterial;
