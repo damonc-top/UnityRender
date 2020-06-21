@@ -1,5 +1,5 @@
-﻿#if !defined(MY_DEFERRED_SHADING)
-#define MY_DEFERRED_SHADING
+﻿#if !defined(_21_DEFERRED_SHADING)
+#define _21_DEFERRED_SHADING
 
 #include "UnityPBSLighting.cginc"
 
