@@ -1,0 +1,5 @@
+*.shader linguist-language=C#
+
+*.cg linguist-language=C#
+
+*.cs linguist-language=C#
