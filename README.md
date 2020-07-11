@@ -1,6 +1,6 @@
 ## UnityRender
 
-翻译自* [catlikecoding](https://catlikecoding.com/unity/tutorials/rendering/)的shader教程实践
+原文出处说明，翻译自[catlikecoding](https://catlikecoding.com/unity/tutorials/rendering/)的shader教程实践
 
 ## 目录
 
