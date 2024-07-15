@@ -101,5 +101,4 @@
 
 ## PDF & Word下载
 
-* [PDF](UnityShader翻译.pdf)
 * [Word](UnityShader翻译.docx)
